@@ -1,0 +1,156 @@
+# Render.com Blueprint for LibreChat
+# This blueprint defines the infrastructure needed to deploy LibreChat on Render.com
+
+services:
+  # Main LibreChat Application
+  - type: web
+    name: librechat
+    runtime: docker
+    dockerfilePath: ./Dockerfile.semantic-fabric
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3080
+      - key: HOST
+        value: 0.0.0.0
+      - key: MONGO_URI
+        value: mongodb://librechatuser:librechatpassword@${MONGODB_HOST}:27017/LibreChat?authSource=admin&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000&maxPoolSize=20
+      - key: MEILI_HOST
+        value: http://${MEILISEARCH_HOST}:7700
+      - key: MEILI_MASTER_KEY
+        value: "librechat-meilisearch-master-key"
+      - key: RAG_PORT
+        value: 8000
+      - key: RAG_API_URL
+        value: http://${RAG_API_HOST}:8000
+      - key: NODE_ENV
+        value: production
+      - key: UID
+        value: 1000
+      - key: GID
+        value: 1000
+      - key: DEBUG
+        value: "true"
+      - key: DEBUG_LEVEL
+        value: "debug"
+      - key: ALLOW_REGISTRATION
+        value: "true"
+      - key: ALLOW_EMAIL_LOGIN
+        value: "true"
+      - key: JWT_SECRET
+        value: "librechat-jwt-secret-key-for-render-deployment"
+      - key: JWT_REFRESH_SECRET
+        value: "librechat-jwt-refresh-secret-key-for-render-deployment"
+      - key: CREDS_KEY
+        value: "librechat-credentials-encryption-key"
+      - key: CREDS_IV
+        value: "librechat-creds-iv"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: OPENROUTER_KEY
+        sync: false
+      - key: PORTKEY_API_KEY
+        sync: false
+      - key: PORTKEY_OPENAI_VIRTUAL_KEY
+        sync: false
+    disk:
+      name: librechat-data
+      mountPath: /app/uploads
+      sizeGB: 10
+
+  # RAG API Service
+  - type: pserv
+    name: rag-api
+    runtime: image
+    image:
+      url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    envVars:
+      - key: DB_HOST
+        value: ${VECTORDB_HOST}
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        value: myuser
+      - key: DB_PASSWORD
+        value: mypassword
+      - key: DB_NAME
+        value: mydatabase
+      - key: RAG_PORT
+        value: 8000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: VECTOR_DB_TYPE
+        value: pgvector
+      - key: PGUSER
+        value: myuser
+      - key: PGPASSWORD
+        value: mypassword
+      - key: PGDATABASE
+        value: mydatabase
+      - key: PGHOST
+        value: ${VECTORDB_HOST}
+      - key: PGPORT
+        value: 5432
+      - key: JWT_SECRET
+        value: "librechat-jwt-secret-key-for-render-deployment"
+
+  # MongoDB for main storage (as a service)
+  - type: pserv
+    name: mongodb
+    runtime: image
+    image:
+      url: mongo:latest
+    disk:
+      name: mongo-data
+      mountPath: /data/db
+      sizeGB: 10
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: librechatuser
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: "librechatpassword"
+
+  # MeiliSearch for search functionality (as a service)
+  - type: pserv
+    name: meilisearch
+    runtime: image
+    image:
+      url: getmeili/meilisearch:v1.12.3
+    disk:
+      name: meili-data
+      mountPath: /meili_data
+      sizeGB: 10
+    envVars:
+      - key: MEILI_NO_ANALYTICS
+        value: "true"
+      - key: MEILI_MASTER_KEY
+        value: "librechat-meilisearch-master-key"
+      - key: MEILI_ENV
+        value: "development"
+      - key: MEILI_LOG_LEVEL
+        value: "INFO"
+
+  # PostgreSQL with pgvector for vector storage
+  - type: pserv
+    name: vectordb
+    runtime: image
+    image: 
+      url: ankane/pgvector:latest
+    disk:
+      name: pg-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+    envVars:
+      - key: POSTGRES_USER
+        value: myuser
+      - key: POSTGRES_PASSWORD
+        value: mypassword
+      - key: POSTGRES_DB
+        value: mydatabase

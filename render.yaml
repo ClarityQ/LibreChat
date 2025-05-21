@@ -67,9 +67,9 @@ services:
       - key: DB_PORT
         value: 5432
       - key: DB_USER
-        value: postgres
+        value: myuser
       - key: DB_PASSWORD
-        generateValue: true
+        value: mypassword
       - key: DB_NAME
         value: librechatvectordb
       - key: RAG_PORT
@@ -123,8 +123,8 @@ services:
       sizeGB: 10
     envVars:
       - key: POSTGRES_USER
-        value: postgres
+        value: myuser
       - key: POSTGRES_PASSWORD
-        generateValue: true
+        value: mypassword
       - key: POSTGRES_DB
         value: librechatvectordb

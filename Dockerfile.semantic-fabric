@@ -1,0 +1,28 @@
+FROM ghcr.io/danny-avila/librechat-dev:latest
+
+USER root
+
+# Install Python and virtual environment support
+RUN apk add --no-cache python3 py3-pip python3-dev build-base
+
+# Create a directory for the semantic-fabric code and for the venv
+RUN mkdir -p /app/clarityq_mcp && \
+    mkdir -p /opt/venv
+
+# Create a virtual environment
+RUN python -m venv /opt/venv
+
+# Install dependencies in the virtual environment
+RUN /opt/venv/bin/pip install httpx>=0.28.1 loguru>=0.7.3 mcp>=1.6.0 pydantic>=2.0.0 pyyaml>=6.0.2
+
+# Set required permissions
+RUN chmod -R 755 /opt/venv
+
+# Set work directory
+WORKDIR /app
+
+# Switch back to the non-root user
+USER node
+
+# Default command (will be overridden by docker-compose)
+CMD ["node", "api/server/index.js"]

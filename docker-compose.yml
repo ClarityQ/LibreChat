@@ -9,7 +9,9 @@ services:
     depends_on:
       - mongodb
       - rag_api
-    image: ghcr.io/danny-avila/librechat-dev:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.semantic-fabric
     restart: always
     user: "${UID}:${GID}"
     extra_hosts:
@@ -24,9 +26,14 @@ services:
       - type: bind
         source: ./.env
         target: /app/.env
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/api/logs
+      # Mount the semantic-fabric code
+      - /Users/michael/Projects/clarityq-mcp:/app/clarityq_mcp
   mongodb:
     container_name: chat-mongodb
     image: mongo

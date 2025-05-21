@@ -1,0 +1,123 @@
+# Render.com Blueprint for LibreChat
+# This blueprint defines the infrastructure needed to deploy LibreChat on Render.com
+
+services:
+  # Main LibreChat Application
+  - type: web
+    name: librechat
+    runtime: docker
+    plan: standard
+    dockerfilePath: ./Dockerfile.semantic-fabric
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3080
+      - key: HOST
+        value: 0.0.0.0
+      - key: MONGO_URI
+        value: mongodb://mongodb:27017/LibreChat
+      - key: MEILI_HOST
+        value: http://meilisearch:7700
+      - key: MEILI_MASTER_KEY
+        generateValue: true
+      - key: RAG_PORT
+        value: 8000
+      - key: RAG_API_URL
+        value: http://rag-api:8000
+      - key: NODE_ENV
+        value: production
+      - key: UID
+        value: 1000
+      - key: GID
+        value: 1000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: OPENROUTER_KEY
+        sync: false
+      - key: PORTKEY_API_KEY
+        sync: false
+      - key: PORTKEY_OPENAI_VIRTUAL_KEY
+        sync: false
+    disk:
+      name: librechat-data
+      mountPath: /app/uploads
+      sizeGB: 10
+
+  # RAG API Service
+  - type: pserv
+    name: rag-api
+    runtime: docker
+    plan: standard
+    dockerCommand: bash -c "gunicorn --bind :8000 --workers 2 --worker-class uvicorn.workers.UvicornWorker rag_api:app"
+    dockerContext: .
+    dockerfilePath: ./rag.yml
+    envVars:
+      - key: DB_HOST
+        value: vectordb
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASSWORD
+        generateValue: true
+      - key: DB_NAME
+        value: librechatvectordb
+      - key: RAG_PORT
+        value: 8000
+
+  # MongoDB for main storage (as a service)
+  - type: pserv
+    name: mongodb
+    runtime: image
+    plan: standard
+    image:
+      url: mongo:latest
+    disk:
+      name: mongo-data
+      mountPath: /data/db
+      sizeGB: 10
+
+  # MeiliSearch for search functionality (as a service)
+  - type: pserv
+    name: meilisearch
+    runtime: image
+    plan: standard
+    image:
+      url: getmeili/meilisearch:v1.12.3
+    disk:
+      name: meili-data
+      mountPath: /meili_data
+      sizeGB: 5
+    envVars:
+      - key: MEILI_NO_ANALYTICS
+        value: "true"
+      - key: MEILI_MASTER_KEY
+        generateValue: true
+
+  # PostgreSQL with pgvector for vector storage
+  - type: pserv
+    name: vectordb
+    runtime: image
+    plan: standard
+    image:
+      url: ankane/pgvector:latest
+    disk:
+      name: pg-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+    envVars:
+      - key: POSTGRES_USER
+        value: postgres
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGRES_DB
+        value: librechatvectordb

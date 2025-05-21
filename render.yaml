@@ -55,11 +55,10 @@ services:
   # RAG API Service
   - type: pserv
     name: rag-api
-    runtime: docker
+    runtime: image
     plan: standard
-    dockerCommand: bash -c "sed -i 's/DB_HOST = os.getenv(\"DB_HOST\", \"vectordb\")/DB_HOST = os.getenv(\"DB_HOST\", \"vectordb-service\")/' /app/app/config.py && gunicorn --bind :8000 --workers 2 --worker-class uvicorn.workers.UvicornWorker rag_api:app"
-    dockerContext: .
-    dockerfilePath: ./rag.yml
+    image:
+      url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
     envVars:
       - key: DB_HOST
         value: vectordb-service.onrender.com

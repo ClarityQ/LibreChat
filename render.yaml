@@ -16,15 +16,15 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MONGO_URI
-        value: mongodb://mongodb:27017/LibreChat?directConnection=true
+        value: mongodb://${MONGODB_HOST}:27017/LibreChat?directConnection=true
       - key: MEILI_HOST
-        value: http://meilisearch:7700
+        value: http://${MEILISEARCH_HOST}:7700
       - key: MEILI_MASTER_KEY
         generateValue: true
       - key: RAG_PORT
         value: 8000
       - key: RAG_API_URL
-        value: http://rag-api:8000
+        value: http://${RAG_API_HOST}:8000
       - key: NODE_ENV
         value: production
       - key: UID
@@ -65,7 +65,7 @@ services:
       url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
     envVars:
       - key: DB_HOST
-        value: vectordb
+        value: ${VECTORDB_HOST}
       - key: DB_PORT
         value: 5432
       - key: DB_USER

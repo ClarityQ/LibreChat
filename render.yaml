@@ -96,7 +96,7 @@ services:
     disk:
       name: meili-data
       mountPath: /meili_data
-      sizeGB: 5
+      sizeGB: 10
     envVars:
       - key: MEILI_NO_ANALYTICS
         value: "true"

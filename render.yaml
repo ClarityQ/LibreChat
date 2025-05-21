@@ -15,7 +15,7 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MONGO_URI
-        value: mongodb://${MONGODB_HOST}:27017/LibreChat?directConnection=true
+        value: mongodb://${MONGODB_HOST}:27017/LibreChat
       - key: MEILI_HOST
         value: http://${MEILISEARCH_HOST}:7700
       - key: MEILI_MASTER_KEY
@@ -67,17 +67,27 @@ services:
       - key: DB_PORT
         value: 5432
       - key: DB_USER
-        value: postgres
+        value: myuser
       - key: DB_PASSWORD
-        value: postgres
+        value: mypassword
       - key: DB_NAME
-        value: librechatvectordb
+        value: mydatabase
       - key: RAG_PORT
         value: 8000
       - key: OPENAI_API_KEY
         sync: false
       - key: VECTOR_DB_TYPE
         value: pgvector
+      - key: PGUSER
+        value: myuser
+      - key: PGPASSWORD
+        value: mypassword
+      - key: PGDATABASE
+        value: mydatabase
+      - key: PGHOST
+        value: ${VECTORDB_HOST}
+      - key: PGPORT
+        value: 5432
 
   # MongoDB for main storage (as a service)
   - type: pserv
@@ -123,8 +133,8 @@ services:
       sizeGB: 10
     envVars:
       - key: POSTGRES_USER
-        value: postgres
+        value: myuser
       - key: POSTGRES_PASSWORD
-        value: postgres
+        value: mypassword
       - key: POSTGRES_DB
-        value: librechatvectordb
+        value: mydatabase

@@ -33,6 +33,10 @@ services:
         value: 1000
       - key: JWT_SECRET
         generateValue: true
+      - key: CREDS_KEY
+        generateValue: true
+      - key: CREDS_IV
+        generateValue: true
       - key: OPENAI_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY

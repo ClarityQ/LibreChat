@@ -67,9 +67,9 @@ services:
       - key: DB_PORT
         value: 5432
       - key: DB_USER
-        value: myuser
+        value: postgres
       - key: DB_PASSWORD
-        value: mypassword
+        value: postgres
       - key: DB_NAME
         value: librechatvectordb
       - key: RAG_PORT
@@ -115,7 +115,7 @@ services:
   - type: pserv
     name: vectordb
     runtime: image
-    image:
+    image: 
       url: ankane/pgvector:latest
     disk:
       name: pg-data
@@ -123,8 +123,8 @@ services:
       sizeGB: 10
     envVars:
       - key: POSTGRES_USER
-        value: myuser
+        value: postgres
       - key: POSTGRES_PASSWORD
-        value: mypassword
+        value: postgres
       - key: POSTGRES_DB
         value: librechatvectordb

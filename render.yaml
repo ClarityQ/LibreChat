@@ -16,15 +16,15 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MONGO_URI
-        value: mongodb://${MONGODB_HOST}:27017/LibreChat?directConnection=true
+        value: mongodb://mongodb.internal:27017/LibreChat?directConnection=true
       - key: MEILI_HOST
-        value: http://${MEILISEARCH_HOST}:7700
+        value: http://meilisearch.internal:7700
       - key: MEILI_MASTER_KEY
         generateValue: true
       - key: RAG_PORT
         value: 8000
       - key: RAG_API_URL
-        value: http://${RAG_API_HOST}:8000
+        value: http://rag-api.internal:8000
       - key: NODE_ENV
         value: production
       - key: UID
@@ -63,9 +63,11 @@ services:
     plan: standard
     image:
       url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    domains:
+      - rag-api.internal
     envVars:
       - key: DB_HOST
-        value: ${VECTORDB_HOST}
+        value: vectordb.internal
       - key: DB_PORT
         value: 5432
       - key: DB_USER
@@ -97,6 +99,9 @@ services:
         value: librechatuser
       - key: MONGO_INITDB_ROOT_PASSWORD
         generateValue: true
+    # Make the host deterministic with a custom domain
+    domains:
+      - mongodb.internal
 
   # MeiliSearch for search functionality (as a service)
   - type: pserv
@@ -114,6 +119,9 @@ services:
         value: "true"
       - key: MEILI_MASTER_KEY
         generateValue: true
+    # Make the host deterministic with a custom domain
+    domains:
+      - meilisearch.internal
 
   # PostgreSQL with pgvector for vector storage
   - type: pserv
@@ -133,3 +141,6 @@ services:
         generateValue: true
       - key: POSTGRES_DB
         value: librechatvectordb
+    # Make the host deterministic with a custom domain
+    domains:
+      - vectordb.internal

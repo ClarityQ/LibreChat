@@ -8,37 +8,36 @@ This guide explains how to deploy LibreChat on Render.com using the provided ren
 1. Fork or clone the LibreChat repository
 2. Sign up for a [Render.com](https://render.com) account
 3. Create a new Blueprint instance from your repository
-4. Fill in the required environment variables (see below)
-5. Deploy
+4. Deploy
 
-## Required Environment Variables
+## Required API Keys
 
-After the initial blueprint deployment, you'll need to manually set these environment variables:
+After deployment, you'll need to set these API keys in the environment variables:
 
 | Variable | Description |
 |----------|-------------|
-| `VECTORDB_HOST` | Internal hostname of the vectordb service (find in Render Dashboard under "Connect" > "Internal") |
-| `MONGODB_HOST` | Internal hostname of the MongoDB service |
-| `MEILISEARCH_HOST` | Internal hostname of the Meilisearch service |
-| `RAG_API_HOST` | Internal hostname of the RAG API service |
 | `OPENAI_API_KEY` | Your OpenAI API key (for embeddings and models) |
 | `ANTHROPIC_API_KEY` | Your Anthropic API key (optional) |
+| `GROQ_API_KEY` | Your Groq API key (optional) |
+| `MISTRAL_API_KEY` | Your Mistral API key (optional) |
 
-## Finding Internal Hostnames
+## Service Communication
 
-For each service, you need to find the internal hostname:
+Services communicate with each other using internal domains:
 
-1. Go to the Render.com Dashboard
-2. Select the service (e.g., vectordb)
-3. Click "Connect" in the top right
-4. Look for the internal hostname in the "Internal" tab (e.g., "vectordb-2j3e")
-5. Use this value for the corresponding HOST environment variable
+- MongoDB: `mongodb.internal:27017`
+- MeiliSearch: `meilisearch.internal:7700`
+- Vector Database: `vectordb.internal:5432`
+- RAG API: `rag-api.internal:8000`
+
+These domains are automatically set up by the render.yaml blueprint.
 
 ## Troubleshooting
 
-- **Connection errors**: Make sure the internal hostnames are correctly set
-- **Startup failures**: Check service logs for specific error messages
-- **Database connection issues**: Verify that the PostgreSQL with pgvector service is running before the RAG API service
+- **Connection errors**: Check the service logs for specific error messages
+- **Database initialization**: The first startup may take some time as the databases initialize
+- **Authentication issues**: Ensure all API keys are correctly set
+- **Memory errors**: Consider upgrading to a higher-tier plan if you encounter memory limits
 
 ## Additional Configuration
 

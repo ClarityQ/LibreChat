@@ -15,11 +15,11 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MONGO_URI
-        value: mongodb://${MONGODB_HOST}:27017/LibreChat
+        value: mongodb://librechatuser:librechatpassword@${MONGODB_HOST}:27017/LibreChat?authSource=admin
       - key: MEILI_HOST
         value: http://${MEILISEARCH_HOST}:7700
       - key: MEILI_MASTER_KEY
-        generateValue: true
+        value: "librechat-meilisearch-master-key"
       - key: RAG_PORT
         value: 8000
       - key: RAG_API_URL
@@ -30,12 +30,16 @@ services:
         value: 1000
       - key: GID
         value: 1000
+      - key: DEBUG
+        value: "true"
+      - key: DEBUG_LEVEL
+        value: "debug"
       - key: JWT_SECRET
-        generateValue: true
+        value: "librechat-jwt-secret-key-for-render-deployment"
       - key: CREDS_KEY
-        generateValue: true
+        value: "librechat-credentials-encryption-key"
       - key: CREDS_IV
-        generateValue: true
+        value: "librechat-creds-iv"
       - key: OPENAI_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
@@ -88,6 +92,8 @@ services:
         value: ${VECTORDB_HOST}
       - key: PGPORT
         value: 5432
+      - key: JWT_SECRET
+        value: "librechat-jwt-secret-key-for-render-deployment"
 
   # MongoDB for main storage (as a service)
   - type: pserv
@@ -103,7 +109,7 @@ services:
       - key: MONGO_INITDB_ROOT_USERNAME
         value: librechatuser
       - key: MONGO_INITDB_ROOT_PASSWORD
-        generateValue: true
+        value: "librechatpassword"
 
   # MeiliSearch for search functionality (as a service)
   - type: pserv
@@ -119,7 +125,7 @@ services:
       - key: MEILI_NO_ANALYTICS
         value: "true"
       - key: MEILI_MASTER_KEY
-        generateValue: true
+        value: "librechat-meilisearch-master-key"
 
   # PostgreSQL with pgvector for vector storage
   - type: pserv

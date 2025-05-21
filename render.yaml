@@ -94,7 +94,6 @@ services:
         value: librechatuser
       - key: MONGO_INITDB_ROOT_PASSWORD
         generateValue: true
-    command: mongod --noauth --bind_ip_all
 
   # MeiliSearch for search functionality (as a service)
   - type: pserv

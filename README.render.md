@@ -45,7 +45,16 @@ Set these values in the LibreChat service's environment variables:
 - **Connection errors**: Make sure the internal hostnames are correctly set
 - **Database initialization**: The first startup may take some time as the databases initialize
 - **Authentication issues**: Ensure all API keys are correctly set
-- **Memory errors**: Consider upgrading to a higher-tier plan if you encounter memory limits
+- **Resource limits**: By default, services use the free tier. For production use with higher traffic or memory requirements, you may need to upgrade specific services to paid plans
+
+## Reducing Costs
+
+The blueprint is configured to use Render's free tier where possible:
+
+- No plan specification means services will use the free tier by default
+- Free tier has resource limitations (memory, CPU) that might be insufficient for production workloads
+- Disk storage still incurs charges, even on free tiers (currently ~$0.10/GB/month)
+- For a fully functional development environment, the free tier should work for testing
 
 ## Additional Configuration
 

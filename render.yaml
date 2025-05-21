@@ -6,7 +6,6 @@ services:
   - type: web
     name: librechat
     runtime: docker
-    plan: standard
     dockerfilePath: ./Dockerfile.semantic-fabric
     dockerContext: .
     healthCheckPath: /api/health
@@ -60,7 +59,6 @@ services:
   - type: pserv
     name: rag-api
     runtime: image
-    plan: standard
     image:
       url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
     envVars:
@@ -85,7 +83,6 @@ services:
   - type: pserv
     name: mongodb
     runtime: image
-    plan: standard
     image:
       url: mongo:latest
     disk:
@@ -102,7 +99,6 @@ services:
   - type: pserv
     name: meilisearch
     runtime: image
-    plan: standard
     image:
       url: getmeili/meilisearch:v1.12.3
     disk:
@@ -119,7 +115,6 @@ services:
   - type: pserv
     name: vectordb
     runtime: image
-    plan: standard
     image:
       url: ankane/pgvector:latest
     disk:

@@ -16,7 +16,7 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MONGO_URI
-        value: mongodb://mongodb.onrender.com:27017/LibreChat
+        value: mongodb://mongodb.onrender.com:27017/LibreChat?directConnection=true
       - key: MEILI_HOST
         value: http://meilisearch.onrender.com:7700
       - key: MEILI_MASTER_KEY
@@ -57,7 +57,7 @@ services:
     name: rag-api
     runtime: docker
     plan: standard
-    dockerCommand: bash -c "gunicorn --bind :8000 --workers 2 --worker-class uvicorn.workers.UvicornWorker rag_api:app"
+    dockerCommand: bash -c "sed -i 's/DB_HOST = os.getenv(\"DB_HOST\", \"vectordb\")/DB_HOST = os.getenv(\"DB_HOST\", \"vectordb-service\")/' /app/app/config.py && gunicorn --bind :8000 --workers 2 --worker-class uvicorn.workers.UvicornWorker rag_api:app"
     dockerContext: .
     dockerfilePath: ./rag.yml
     envVars:
@@ -75,6 +75,8 @@ services:
         value: 8000
       - key: OPENAI_API_KEY
         sync: false
+      - key: VECTOR_DB_TYPE
+        value: pgvector
 
   # MongoDB for main storage (as a service)
   - type: pserv
@@ -87,6 +89,12 @@ services:
       name: mongo-data
       mountPath: /data/db
       sizeGB: 10
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: librechatuser
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        generateValue: true
+    command: mongod --noauth --bind_ip_all
 
   # MeiliSearch for search functionality (as a service)
   - type: pserv

@@ -20,14 +20,14 @@ services:
           name: mongodb
           property: host
       - key: MONGO_URI
-        value: mongodb://librechatuser:librechatpassword@${MONGODB_HOST}:27017/LibreChat?authSource=admin&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000&maxPoolSize=20
+        value: mongodb://librechatuser:librechatpassword@$MONGODB_HOST:27017/LibreChat?authSource=admin&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000&maxPoolSize=20
       - key: MEILISEARCH_HOST
         fromService:
           type: pserv
           name: meilisearch
           property: host
       - key: MEILI_HOST
-        value: http://${MEILISEARCH_HOST}:7700
+        value: http://$MEILISEARCH_HOST:7700
       - key: MEILI_MASTER_KEY
         value: "librechat-meilisearch-master-key"
       - key: RAG_PORT
@@ -38,7 +38,7 @@ services:
           name: rag-api
           property: host
       - key: RAG_API_URL
-        value: http://${RAG_API_HOST}:8000
+        value: http://$RAG_API_HOST:8000
       - key: NODE_ENV
         value: production
       - key: UID

@@ -18,6 +18,9 @@ RUN /opt/venv/bin/pip install httpx>=0.28.1 loguru>=0.7.3 mcp>=1.6.0 pydantic>=2
 # Copy the clarityq_mcp module into the image
 COPY ./clarityq_mcp /app/clarityq_mcp
 
+# Copy librechat.yaml configuration file
+COPY ./librechat.yaml /app/librechat.yaml
+
 # Set required permissions
 RUN chmod -R 755 /opt/venv && \
     chmod -R 755 /app/clarityq_mcp

@@ -75,6 +75,8 @@ services:
         sync: false
       - key: PORTKEY_OPENAI_VIRTUAL_KEY
         sync: false
+      - key: ENDPOINTS
+        value: "openAI,anthropic,google,agents,mcp"
     disk:
       name: librechat-data
       mountPath: /app/uploads

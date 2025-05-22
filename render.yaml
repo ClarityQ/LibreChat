@@ -5,25 +5,40 @@ services:
   # Main LibreChat Application
   - type: web
     name: librechat
-    runtime: docker
-    dockerfilePath: ./Dockerfile.semantic-fabric
-    dockerContext: .
+    runtime: image
+    image:
+      url: clarityq/libra-chart:shani
     healthCheckPath: /api/health
     envVars:
       - key: PORT
         value: 3080
       - key: HOST
         value: 0.0.0.0
+      - key: MONGODB_HOST
+        fromService:
+          type: pserv
+          name: mongodb
+          property: host
       - key: MONGO_URI
-        value: mongodb://librechatuser:librechatpassword@${MONGODB_HOST}:27017/LibreChat?authSource=admin&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000&maxPoolSize=20
+        value: mongodb://librechatuser:librechatpassword@$MONGODB_HOST:27017/LibreChat?authSource=admin&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000&maxPoolSize=20
+      - key: MEILISEARCH_HOST
+        fromService:
+          type: pserv
+          name: meilisearch
+          property: host
       - key: MEILI_HOST
-        value: http://${MEILISEARCH_HOST}:7700
+        value: http://$MEILISEARCH_HOST:7700
       - key: MEILI_MASTER_KEY
         value: "librechat-meilisearch-master-key"
       - key: RAG_PORT
         value: 8000
+      - key: RAG_API_HOST
+        fromService:
+          type: pserv
+          name: rag-api
+          property: host
       - key: RAG_API_URL
-        value: http://${RAG_API_HOST}:8000
+        value: http://$RAG_API_HOST:8000
       - key: NODE_ENV
         value: production
       - key: UID
@@ -60,6 +75,8 @@ services:
         sync: false
       - key: PORTKEY_OPENAI_VIRTUAL_KEY
         sync: false
+      - key: ENDPOINTS
+        value: "openAI,anthropic,google,agents,mcp"
     disk:
       name: librechat-data
       mountPath: /app/uploads
@@ -73,7 +90,10 @@ services:
       url: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
     envVars:
       - key: DB_HOST
-        value: ${VECTORDB_HOST}
+        fromService:
+          type: pserv
+          name: vectordb
+          property: host
       - key: DB_PORT
         value: 5432
       - key: DB_USER
@@ -95,7 +115,10 @@ services:
       - key: PGDATABASE
         value: mydatabase
       - key: PGHOST
-        value: ${VECTORDB_HOST}
+        fromService:
+          type: pserv
+          name: vectordb
+          property: host
       - key: PGPORT
         value: 5432
       - key: JWT_SECRET
